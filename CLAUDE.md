@@ -13,6 +13,7 @@ better-auth-bsky — A better-auth plugin for AT Protocol OAuth sign-in.
 - `bun run lint` — Lint with oxlint (type-aware)
 - `bun run fmt` — Format with oxfmt
 - `bun run check` — Lint + typecheck + format check
+- `bun run release` — Build + interactive version bump, commit, tag, and push (uses `bumpp`). For non-interactive use: `bun run build && bunx bumpp --release <major|minor|patch> --yes`
 - `bun install` — Install dependencies (always use bun, not npm)
 
 ## Architecture

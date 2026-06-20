@@ -2,8 +2,7 @@ name: Publish
 
 on:
   push:
-    tags:
-      - "v*"
+    branches: [main]
 
 permissions:
   contents: read
@@ -27,5 +26,17 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
+      - name: Check if version is already published
+        id: version_check
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          PACKAGE=$(node -p "require('./package.json').name")
+          if npm view "${PACKAGE}@${VERSION}" version 2>/dev/null; then
+            echo "published=true" >> $GITHUB_OUTPUT
+          else
+            echo "published=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Publish
+        if: steps.version_check.outputs.published == 'false'
         run: npm publish --provenance --access public

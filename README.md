@@ -5,7 +5,7 @@ A [better-auth](https://better-auth.com) plugin that adds ATProto / Bluesky OAut
 ## Installation
 
 ```bash
-pnpm add @kingironman2011/better-auth-bsky better-auth @atcute/oauth-node-client
+pnpm add @kingironman2011/better-auth-bsky better-auth
 ```
 
 ## Usage

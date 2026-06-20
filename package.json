@@ -1,6 +1,6 @@
 {
   "name": "@kingironman2011/better-auth-bsky",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "A better-auth plugin that adds ATProto/Bluesky OAuth 2.1 authentication (DPoP, PAR, PKCE) via @atcute/oauth-node-client.",
   "keywords": [
     "atproto",
@@ -63,7 +63,7 @@
     "demo": "tsx watch demo/server.ts",
     "demo:local": "LOCAL=1 tsx watch demo/server.ts",
     "prepublishOnly": "pnpm run build",
-    "release": "pnpm run build && bumpp"
+    "release": "pnpm run build"
   },
   "dependencies": {
     "@atcute/identity-resolver": "^2.0.0",
@@ -79,7 +79,6 @@
     "@types/node": "^26.0.0",
     "better-auth": "^1.6.11",
     "better-sqlite3": "^12.0.0",
-    "bumpp": "11.1.0",
     "eslint": "^10.5.0",
     "globals": "^17.6.0",
     "hono": "4.12.26",

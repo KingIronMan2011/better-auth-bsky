@@ -6,7 +6,7 @@ export const atprotoClient = () =>
     id: "atproto",
 
     $InferServerPlugin: {} as ReturnType<typeof atproto>,
-    getActions: ($fetch) => ({
+    getActions: ($fetch, _$store, _options) => ({
       signIn: {
         atproto: async (data: { handle: string; callbackURL?: string }) => {
           return $fetch("/sign-in/atproto", {

@@ -1,12 +1,16 @@
 import type { BetterAuthClientPlugin } from "better-auth/client";
 import type { atproto } from "./server.js";
 
+type GetActionsArgs = Parameters<
+  NonNullable<BetterAuthClientPlugin["getActions"]>
+>;
+
 export const atprotoClient = () =>
   ({
     id: "atproto",
 
     $InferServerPlugin: {} as ReturnType<typeof atproto>,
-    getActions: ($fetch, _$store, _options) => ({
+    getActions: (...[$fetch]: GetActionsArgs) => ({
       signIn: {
         atproto: async (data: { handle: string; callbackURL?: string }) => {
           return $fetch("/sign-in/atproto", {

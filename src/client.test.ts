@@ -17,12 +17,16 @@ describe("atprotoClient", () => {
     expect(typeof plugin.getActions).toBe("function");
   });
 
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   describe("getActions", () => {
     it("returns signIn.atproto action", () => {
       const plugin = atprotoClient();
       const mockFetch = vi.fn();
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- test mock
-      const actions = plugin.getActions(mockFetch as any, undefined as any, undefined);
+      const actions = plugin.getActions(
+        mockFetch as any,
+        undefined as any,
+        undefined,
+      );
 
       expect(actions.signIn).toBeDefined();
       expect(typeof actions.signIn.atproto).toBe("function");
@@ -31,8 +35,11 @@ describe("atprotoClient", () => {
     it("returns atproto.getSession action", () => {
       const plugin = atprotoClient();
       const mockFetch = vi.fn();
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- test mock
-      const actions = plugin.getActions(mockFetch as any, undefined as any, undefined);
+      const actions = plugin.getActions(
+        mockFetch as any,
+        undefined as any,
+        undefined,
+      );
 
       expect(actions.atproto).toBeDefined();
       expect(typeof actions.atproto.getSession).toBe("function");
@@ -41,8 +48,11 @@ describe("atprotoClient", () => {
     it("returns atproto.restore action", () => {
       const plugin = atprotoClient();
       const mockFetch = vi.fn();
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- test mock
-      const actions = plugin.getActions(mockFetch as any, undefined as any, undefined);
+      const actions = plugin.getActions(
+        mockFetch as any,
+        undefined as any,
+        undefined,
+      );
 
       expect(typeof actions.atproto.restore).toBe("function");
     });
@@ -50,8 +60,11 @@ describe("atprotoClient", () => {
     it("returns atproto.signOut action", () => {
       const plugin = atprotoClient();
       const mockFetch = vi.fn();
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- test mock
-      const actions = plugin.getActions(mockFetch as any, undefined as any, undefined);
+      const actions = plugin.getActions(
+        mockFetch as any,
+        undefined as any,
+        undefined,
+      );
 
       expect(typeof actions.atproto.signOut).toBe("function");
     });
@@ -61,8 +74,11 @@ describe("atprotoClient", () => {
       const mockFetch = vi
         .fn()
         .mockResolvedValue({ url: "https://bsky.social/auth" });
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- test mock
-      const actions = plugin.getActions(mockFetch as any, undefined as any, undefined);
+      const actions = plugin.getActions(
+        mockFetch as any,
+        undefined as any,
+        undefined,
+      );
 
       await actions.signIn.atproto({
         handle: "user.bsky.social",
@@ -80,8 +96,11 @@ describe("atprotoClient", () => {
       const mockFetch = vi
         .fn()
         .mockResolvedValue({ url: "https://bsky.social/auth" });
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- test mock
-      const actions = plugin.getActions(mockFetch as any, undefined as any, undefined);
+      const actions = plugin.getActions(
+        mockFetch as any,
+        undefined as any,
+        undefined,
+      );
 
       await actions.signIn.atproto({ handle: "user.bsky.social" });
 
@@ -98,8 +117,11 @@ describe("atprotoClient", () => {
         handle: "user.bsky.social",
         pdsUrl: "https://bsky.network",
       });
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- test mock
-      const actions = plugin.getActions(mockFetch as any, undefined as any, undefined);
+      const actions = plugin.getActions(
+        mockFetch as any,
+        undefined as any,
+        undefined,
+      );
 
       await actions.atproto.getSession();
 
@@ -111,8 +133,11 @@ describe("atprotoClient", () => {
     it("atproto.restore calls $fetch with correct path and method", async () => {
       const plugin = atprotoClient();
       const mockFetch = vi.fn().mockResolvedValue({ active: true });
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- test mock
-      const actions = plugin.getActions(mockFetch as any, undefined as any, undefined);
+      const actions = plugin.getActions(
+        mockFetch as any,
+        undefined as any,
+        undefined,
+      );
 
       await actions.atproto.restore();
 
@@ -124,8 +149,11 @@ describe("atprotoClient", () => {
     it("atproto.signOut calls $fetch with correct path and method", async () => {
       const plugin = atprotoClient();
       const mockFetch = vi.fn().mockResolvedValue({ success: true });
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- test mock
-      const actions = plugin.getActions(mockFetch as any, undefined as any, undefined);
+      const actions = plugin.getActions(
+        mockFetch as any,
+        undefined as any,
+        undefined,
+      );
 
       await actions.atproto.signOut();
 
@@ -134,4 +162,5 @@ describe("atprotoClient", () => {
       });
     });
   });
+  /* eslint-enable @typescript-eslint/no-explicit-any */
 });

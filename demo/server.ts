@@ -36,11 +36,9 @@ app.use("/api/auth/**", cors({ origin: (o) => o, credentials: true }));
 app.on(["GET", "POST"], "/api/auth/**", (c) => auth.handler(c.req.raw));
 app.get("/", (c) => c.html(PAGE_HTML));
 
-// 4. Serve via Bun's native fetch-based server
-Bun.serve({
-  port: PORT,
-  fetch: app.fetch,
-});
+// 4. Serve via @hono/node-server
+const { serve } = await import("@hono/node-server");
+serve({ fetch: app.fetch, port: PORT });
 
 console.log("Auth ready — open the URL above to sign in\n");
 

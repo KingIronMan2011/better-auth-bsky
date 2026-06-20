@@ -11,7 +11,9 @@ const PRIVATE_KEY_FIELDS = new Set(["d", "p", "q", "dp", "dq", "qi"]);
  * Generates an ES256 keypair for ATProto confidential client authentication.
  * The returned JWK includes private key material and should be stored securely.
  */
-export async function generateAtprotoKeypair(kid?: string): Promise<ClientAssertionPrivateJwk> {
+export async function generateAtprotoKeypair(
+  kid?: string,
+): Promise<ClientAssertionPrivateJwk> {
   return generateClientAssertionKey(kid ?? "atproto-key", "ES256");
 }
 
@@ -19,8 +21,12 @@ export async function generateAtprotoKeypair(kid?: string): Promise<ClientAssert
  * Extracts the public portion of a JWK by stripping private key fields.
  * Safe to serve at the JWKS endpoint.
  */
-export function extractPublicJwk(privateJwk: ClientAssertionPrivateJwk): PublicJwk {
-  const entries = Object.entries(privateJwk).filter(([key]) => !PRIVATE_KEY_FIELDS.has(key));
-  // oxlint-disable-next-line no-unsafe-type-assertion -- Object.fromEntries loses type info
+export function extractPublicJwk(
+  privateJwk: ClientAssertionPrivateJwk,
+): PublicJwk {
+  const entries = Object.entries(privateJwk).filter(
+    ([key]) => !PRIVATE_KEY_FIELDS.has(key),
+  );
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- Object.fromEntries loses type info
   return Object.fromEntries(entries) as PublicJwk;
 }

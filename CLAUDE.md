@@ -2,19 +2,19 @@
 
 ## Project
 
-better-auth-bsky — A better-auth plugin for AT Protocol OAuth sign-in.
+@kingironman2011/better-auth-bsky — A better-auth plugin for AT Protocol OAuth sign-in.
 
 ## Commands
 
-- `bun run build` — Build with tsdown (ESM + dts)
-- `bun run test` — Run vitest
-- `bun run test:watch` — Run vitest in watch mode
-- `bun run typecheck` — Type-check without emitting
-- `bun run lint` — Lint with oxlint (type-aware)
-- `bun run fmt` — Format with oxfmt
-- `bun run check` — Lint + typecheck + format check
-- `bun run release` — Build + interactive version bump, commit, tag, and push (uses `bumpp`). For non-interactive use: `bun run build && bunx bumpp --release <major|minor|patch> --yes`
-- `bun install` — Install dependencies (always use bun, not npm)
+- `pnpm run build` — Build with tsdown (ESM + dts)
+- `pnpm run test` — Run vitest
+- `pnpm run test:watch` — Run vitest in watch mode
+- `pnpm run typecheck` — Type-check without emitting
+- `pnpm run lint` — Lint with ESLint
+- `pnpm run format` — Format with Prettier
+- `pnpm run check` — Lint + typecheck + format check
+- `pnpm run release` — Build + interactive version bump, commit, tag, and push (uses `bumpp`). For non-interactive use: `pnpm run build && pnpm dlx bumpp --release <major|minor|patch> --yes`
+- `pnpm install` — Install dependencies (always use pnpm, not npm or bun)
 
 ## Architecture
 
@@ -51,7 +51,7 @@ Adds tables: `atprotoState` (ephemeral auth state, 10 min TTL), `atprotoSession`
 ## Style
 
 - 2-space indentation, double quotes, semicolons, trailing commas
-- 100 char line width (oxfmt)
+- 100 char line width (Prettier)
 - ESM only (`"type": "module"`)
 - Separate concerns across files (types, stores, key-utils, server, client)
 - `createAuthEndpoint` from `better-auth/api` for all endpoints

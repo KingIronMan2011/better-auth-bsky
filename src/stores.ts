@@ -15,13 +15,19 @@ export interface DbAdapter {
     model: string;
     where: { field: string; value: unknown }[];
   }) => Promise<T | null>;
-  create: <T>(data: { model: string; data: Record<string, unknown> }) => Promise<T>;
+  create: <T>(data: {
+    model: string;
+    data: Record<string, unknown>;
+  }) => Promise<T>;
   update: <T>(data: {
     model: string;
     where: { field: string; value: unknown }[];
     update: Record<string, unknown>;
   }) => Promise<T | null>;
-  delete: (data: { model: string; where: { field: string; value: unknown }[] }) => Promise<void>;
+  delete: (data: {
+    model: string;
+    where: { field: string; value: unknown }[];
+  }) => Promise<void>;
   deleteMany: (data: {
     model: string;
     where: { field: string; value: unknown }[];
@@ -40,7 +46,7 @@ export class DbSessionStore implements SessionStore {
       where: [{ field: "did", value: did }],
     });
     if (!row) return undefined;
-    // oxlint-disable-next-line no-unsafe-type-assertion -- DB stores serialised JSON we control
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- DB stores serialised JSON we control
     return JSON.parse(row.sessionData) as StoredSession;
   }
 
@@ -105,7 +111,7 @@ export class DbStateStore implements StateStore {
       await this.delete(stateKey);
       return undefined;
     }
-    // oxlint-disable-next-line no-unsafe-type-assertion -- DB stores serialised JSON we control
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- DB stores serialised JSON we control
     return JSON.parse(row.stateData) as StoredState;
   }
 

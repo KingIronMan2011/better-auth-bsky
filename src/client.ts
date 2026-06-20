@@ -4,7 +4,7 @@ import type { atproto } from "./server.js";
 export const atprotoClient = () =>
   ({
     id: "atproto",
-    // oxlint-disable-next-line no-unsafe-type-assertion -- required by better-auth plugin inference
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- required by better-auth plugin inference
     $InferServerPlugin: {} as ReturnType<typeof atproto>,
     getActions: ($fetch) => ({
       signIn: {

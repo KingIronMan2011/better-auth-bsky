@@ -1,5 +1,9 @@
 import { describe, it, expect, vi } from "vitest";
-import { atproto, fetchAtprotoProfilePublic, atprotoPlaceholderEmail } from "./server.js";
+import {
+  atproto,
+  fetchAtprotoProfilePublic,
+  atprotoPlaceholderEmail,
+} from "./server.js";
 
 describe("atproto plugin factory", () => {
   const baseOptions = {
@@ -173,7 +177,7 @@ describe("atproto plugin factory", () => {
       const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
       const plugin = atproto({
         ...baseOptions,
-        // oxlint-disable-next-line no-unsafe-type-assertion -- test mock keyset
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- test mock keyset
         keyset: [{ kty: "EC", crv: "P-256", kid: "k1", alg: "ES256" } as any],
       });
       const mockAdapter = {
@@ -198,7 +202,7 @@ describe("atproto plugin factory", () => {
     it("initializes without error for HTTPS URL (confidential client)", () => {
       const plugin = atproto({
         ...baseOptions,
-        // oxlint-disable-next-line no-unsafe-type-assertion -- test mock keyset
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- test mock keyset
         keyset: [{ kty: "EC", crv: "P-256", kid: "k1", alg: "ES256" } as any],
       });
       const mockAdapter = {
@@ -310,7 +314,7 @@ describe("fetchAtprotoProfilePublic", () => {
   it("returns null on network error", async () => {
     // Mock fetch to simulate network error
     const originalFetch = globalThis.fetch;
-    // oxlint-disable-next-line no-unsafe-type-assertion -- test mock
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- test mock
     globalThis.fetch = vi
       .fn()
       .mockRejectedValue(new Error("Network error")) as unknown as typeof fetch;
@@ -323,7 +327,7 @@ describe("fetchAtprotoProfilePublic", () => {
 
   it("returns null on non-OK response", async () => {
     const originalFetch = globalThis.fetch;
-    // oxlint-disable-next-line no-unsafe-type-assertion -- test mock
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- test mock
     globalThis.fetch = vi
       .fn()
       .mockResolvedValue({ ok: false, status: 404 }) as unknown as typeof fetch;
@@ -336,7 +340,7 @@ describe("fetchAtprotoProfilePublic", () => {
 
   it("returns profile data on successful response", async () => {
     const originalFetch = globalThis.fetch;
-    // oxlint-disable-next-line no-unsafe-type-assertion -- test mock
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- test mock
     globalThis.fetch = vi.fn().mockResolvedValue({
       ok: true,
       json: () =>

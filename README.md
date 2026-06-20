@@ -1,11 +1,11 @@
-# better-auth-bsky
+# @kingironman2011/better-auth-bsky
 
 A [better-auth](https://better-auth.com) plugin that adds ATProto / Bluesky OAuth 2.1 authentication using [`@atcute/oauth-node-client`](https://github.com/mary-ext/atcute). Supports DPoP, PAR, and PKCE — the standard way to authenticate ATProto/Bluesky users without app passwords.
 
 ## Installation
 
 ```bash
-bun add better-auth-bsky better-auth @atcute/oauth-node-client
+pnpm add @kingironman2011/better-auth-bsky better-auth @atcute/oauth-node-client
 ```
 
 ## Usage
@@ -14,7 +14,7 @@ bun add better-auth-bsky better-auth @atcute/oauth-node-client
 
 ```typescript
 import { betterAuth } from "better-auth";
-import { atproto } from "better-auth-bsky";
+import { atproto } from "@kingironman2011/better-auth-bsky";
 
 export const auth = betterAuth({
   // ... your config
@@ -30,7 +30,7 @@ export const auth = betterAuth({
 
 ```typescript
 import { createAuthClient } from "better-auth/client";
-import { atprotoClient } from "better-auth-bsky/client";
+import { atprotoClient } from "@kingironman2011/better-auth-bsky/client";
 
 const client = createAuthClient({
   plugins: [atprotoClient()],
@@ -108,7 +108,7 @@ The plugin auto-detects the client type based on whether `keyset` is provided.
 ### Generating a keypair
 
 ```typescript
-import { generateAtprotoKeypair } from "better-auth-bsky";
+import { generateAtprotoKeypair } from "@kingironman2011/better-auth-bsky";
 
 const privateJwk = await generateAtprotoKeypair();
 // Store securely — do NOT commit to version control
@@ -199,7 +199,7 @@ The plugin extends the `user` table and adds two new tables via better-auth's mi
 
 ## Exports
 
-### `better-auth-bsky` (main)
+### `@kingironman2011/better-auth-bsky` (main)
 
 | Export                      | Type     | Description                                       |
 | --------------------------- | -------- | ------------------------------------------------- |
@@ -215,7 +215,7 @@ The plugin extends the `user` table and adds two new tables via better-auth's mi
 | `AtprotoPluginOptions`      | type     | Plugin configuration options                      |
 | `AtprotoProfile`            | type     | Profile data shape from ATProto                   |
 
-### `better-auth-bsky/client`
+### `@kingironman2011/better-auth-bsky/client`
 
 | Export          | Type     | Description           |
 | --------------- | -------- | --------------------- |
@@ -224,15 +224,15 @@ The plugin extends the `user` table and adds two new tables via better-auth's mi
 ## Development
 
 ```bash
-bun install
-bun run build       # build with tsdown
-bun run test        # vitest run
-bun run test:watch  # vitest watch
-bun run check       # lint + typecheck + fmt check
-bun run demo        # interactive demo with Cloudflare tunnel
-bun run demo:local  # demo on localhost only (no tunnel)
+pnpm install
+pnpm run build       # build with tsdown
+pnpm run test        # vitest run
+pnpm run test:watch  # vitest watch
+pnpm run lint        # lint + typecheck + fmt check
+pnpm run demo        # interactive demo with Cloudflare tunnel
+pnpm run demo:local  # demo on localhost only (no tunnel)
 ```
 
 ## License
 
-MIT
+[MIT](LICENSE.md)

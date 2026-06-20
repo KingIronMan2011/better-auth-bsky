@@ -93,7 +93,11 @@ export const atprotoSchema = {
       userId: {
         type: "string" as const,
         required: true,
-        references: { model: "user", field: "id", onDelete: "cascade" as const },
+        references: {
+          model: "user",
+          field: "id",
+          onDelete: "cascade" as const,
+        },
       },
       handle: { type: "string" as const, required: true },
       pdsUrl: { type: "string" as const, required: true },

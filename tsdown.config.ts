@@ -9,7 +9,12 @@ export default defineConfig({
   target: "es2022",
   platform: "neutral",
   deps: {
-    neverBundle: [/^better-auth/, /^better-call/, /^@better-fetch\//, /^@atcute\//],
+    neverBundle: [
+      /^better-auth/,
+      /^better-call/,
+      /^@better-fetch\//,
+      /^@atcute\//,
+    ],
     onlyBundle: ["valibot"],
   },
 });

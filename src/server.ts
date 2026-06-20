@@ -28,16 +28,21 @@ import { DbSessionStore, DbStateStore } from "./stores.js";
 // ────────────────────────── Helpers ──────────────────────────
 
 /** Safely extract a string field from an unknown record. */
-function getString(data: Record<string, unknown>, key: string): string | undefined {
+function getString(
+  data: Record<string, unknown>,
+  key: string,
+): string | undefined {
   const val = data[key];
   return typeof val === "string" ? val : undefined;
 }
 
 /** Parse a JSON response body into a plain record. */
-async function parseJsonResponse(resp: Response): Promise<Record<string, unknown>> {
+async function parseJsonResponse(
+  resp: Response,
+): Promise<Record<string, unknown>> {
   const body: unknown = await resp.json();
   if (typeof body === "object" && body !== null && !Array.isArray(body)) {
-    // oxlint-disable-next-line no-unsafe-type-assertion -- validated above
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- validated above
     return body as Record<string, unknown>;
   }
   return {};
@@ -91,7 +96,7 @@ function buildMetadata(baseURL: string, options: AtprotoPluginOptions) {
           "falling back to public client mode. Use an HTTPS baseURL for confidential client support.",
       );
     }
-    // oxlint-disable-next-line no-unsafe-type-assertion -- loopback client_id format per ATProto spec
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- loopback client_id format per ATProto spec
     return {
       redirect_uris: [redirectUri],
       scope,
@@ -157,7 +162,9 @@ function createActorResolver() {
  * Fetch an ATProto profile using the Bluesky public API.
  * This is a fallback when an authenticated session is not available.
  */
-export async function fetchAtprotoProfilePublic(did: string): Promise<AtprotoProfile | null> {
+export async function fetchAtprotoProfilePublic(
+  did: string,
+): Promise<AtprotoProfile | null> {
   try {
     const url = `https://public.api.bsky.app/xrpc/app.bsky.actor.getProfile?actor=${encodeURIComponent(did)}`;
     const resp = await fetch(url);
@@ -180,7 +187,10 @@ export async function fetchAtprotoProfilePublic(did: string): Promise<AtprotoPro
  * Fetch an ATProto profile using an authenticated XRPC client.
  * Falls back to the public API if the authenticated call fails.
  */
-async function fetchAtprotoProfile(oauthClient: OAuthClient, did: string): Promise<AtprotoProfile> {
+async function fetchAtprotoProfile(
+  oauthClient: OAuthClient,
+  did: string,
+): Promise<AtprotoProfile> {
   // Try authenticated fetch first via the OAuth session's DPoP-bound fetch
   try {
     const validDid = toDid(did);
@@ -271,13 +281,21 @@ export const atproto = (options: AtprotoPluginOptions) => {
     schema: atprotoSchema,
 
     rateLimit: [
-      { pathMatcher: (path: string) => path === signInPath, window: 60, max: 5 },
-      { pathMatcher: (path: string) => path === callbackPath, window: 60, max: 10 },
+      {
+        pathMatcher: (path: string) => path === signInPath,
+        window: 60,
+        max: 5,
+      },
+      {
+        pathMatcher: (path: string) => path === callbackPath,
+        window: 60,
+        max: 10,
+      },
     ],
 
     init(ctx: { baseURL: string; adapter: unknown }) {
       const baseURL = ctx.baseURL;
-      // oxlint-disable-next-line no-unsafe-type-assertion -- better-auth types adapter as unknown
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- better-auth types adapter as unknown
       const adapter = ctx.adapter as import("./stores.js").DbAdapter;
 
       const sessionStore = new DbSessionStore(adapter);
@@ -287,10 +305,11 @@ export const atproto = (options: AtprotoPluginOptions) => {
       const actorResolver = createActorResolver();
 
       // Confidential mode only works with HTTPS baseURL — loopback forces public client
-      const useConfidential = !!options.keyset?.length && !isLoopbackUrl(baseURL);
+      const useConfidential =
+        !!options.keyset?.length && !isLoopbackUrl(baseURL);
 
       if (useConfidential) {
-        // oxlint-disable-next-line no-unsafe-type-assertion -- OAuthClient overloaded constructor
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- OAuthClient overloaded constructor
         oauthClient = new OAuthClient({
           metadata,
           keyset: options.keyset!,
@@ -298,7 +317,7 @@ export const atproto = (options: AtprotoPluginOptions) => {
           stores: { sessions: sessionStore, states: stateStore },
         } as ConstructorParameters<typeof OAuthClient>[0]);
       } else {
-        // oxlint-disable-next-line no-unsafe-type-assertion -- OAuthClient overloaded constructor
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- OAuthClient overloaded constructor
         oauthClient = new OAuthClient({
           metadata,
           actorResolver,
@@ -344,7 +363,10 @@ export const atproto = (options: AtprotoPluginOptions) => {
               v.description("ATProto handle (e.g. user.bsky.social) or DID"),
             ),
             callbackURL: v.optional(
-              v.pipe(v.string(), v.description("URL to redirect to after sign-in")),
+              v.pipe(
+                v.string(),
+                v.description("URL to redirect to after sign-in"),
+              ),
             ),
           }),
         },
@@ -352,11 +374,14 @@ export const atproto = (options: AtprotoPluginOptions) => {
           const { handle, callbackURL } = ctx.body;
 
           if (!handle || handle.length < 3) {
-            throw APIError.from("BAD_REQUEST", ATPROTO_ERROR_CODES.INVALID_HANDLE);
+            throw APIError.from(
+              "BAD_REQUEST",
+              ATPROTO_ERROR_CODES.INVALID_HANDLE,
+            );
           }
 
           try {
-            // oxlint-disable-next-line no-unsafe-type-assertion -- validated above
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- validated above
             const identifier = handle as `${string}.${string}`;
             const result = await oauthClient.authorize({
               target: {
@@ -372,7 +397,10 @@ export const atproto = (options: AtprotoPluginOptions) => {
             });
           } catch (e) {
             console.error("[atproto] authorize failed:", e);
-            throw APIError.from("INTERNAL_SERVER_ERROR", ATPROTO_ERROR_CODES.AUTHORIZATION_FAILED);
+            throw APIError.from(
+              "INTERNAL_SERVER_ERROR",
+              ATPROTO_ERROR_CODES.AUTHORIZATION_FAILED,
+            );
           }
         },
       ),
@@ -403,7 +431,8 @@ export const atproto = (options: AtprotoPluginOptions) => {
             if (ctx.query.state) params.set("state", ctx.query.state);
             if (ctx.query.iss) params.set("iss", ctx.query.iss);
 
-            const { session: oauthSession, state: userState } = await oauthClient.callback(params);
+            const { session: oauthSession, state: userState } =
+              await oauthClient.callback(params);
 
             const did = oauthSession.did;
 
@@ -427,10 +456,11 @@ export const atproto = (options: AtprotoPluginOptions) => {
             // ── Determine user: existing account, account linking, or new user ──
 
             // 1. Check for existing atproto account by DID
-            const existingAccount = await ctx.context.internalAdapter.findAccountByProviderId(
-              did,
-              "atproto",
-            );
+            const existingAccount =
+              await ctx.context.internalAdapter.findAccountByProviderId(
+                did,
+                "atproto",
+              );
 
             let userId: string;
 
@@ -446,15 +476,21 @@ export const atproto = (options: AtprotoPluginOptions) => {
             } else {
               // 2. Check if user is currently logged in (account linking scenario)
               const { getSessionFromCtx } = await import("better-auth/api");
-              const currentSession = await getSessionFromCtx(ctx).catch(() => null);
+              const currentSession = await getSessionFromCtx(ctx).catch(
+                () => null,
+              );
 
               if (currentSession) {
                 // User is logged in — try to link the ATProto account
                 const linkingEnabled =
-                  ctx.context.options.account?.accountLinking?.enabled !== false;
+                  ctx.context.options.account?.accountLinking?.enabled !==
+                  false;
 
                 if (!linkingEnabled) {
-                  throw APIError.from("FORBIDDEN", ATPROTO_ERROR_CODES.ACCOUNT_LINKING_DISABLED);
+                  throw APIError.from(
+                    "FORBIDDEN",
+                    ATPROTO_ERROR_CODES.ACCOUNT_LINKING_DISABLED,
+                  );
                 }
 
                 await ctx.context.internalAdapter.linkAccount({
@@ -477,7 +513,10 @@ export const atproto = (options: AtprotoPluginOptions) => {
               } else {
                 // 3. No existing account, no current session — create new user
                 if (options.disableSignUp) {
-                  throw APIError.from("FORBIDDEN", ATPROTO_ERROR_CODES.SIGNUP_DISABLED);
+                  throw APIError.from(
+                    "FORBIDDEN",
+                    ATPROTO_ERROR_CODES.SIGNUP_DISABLED,
+                  );
                 }
 
                 const newUser = await ctx.context.internalAdapter.createUser({
@@ -506,7 +545,9 @@ export const atproto = (options: AtprotoPluginOptions) => {
 
             // ── Update atprotoSession with user info ──
 
-            const existingAtprotoSession = await ctx.context.adapter.findOne<{ id: string }>({
+            const existingAtprotoSession = await ctx.context.adapter.findOne<{
+              id: string;
+            }>({
               model: "atprotoSession",
               where: [{ field: "did", value: did }],
             });
@@ -538,12 +579,17 @@ export const atproto = (options: AtprotoPluginOptions) => {
 
             // ── Create better-auth session ──
 
-            const foundUser = await ctx.context.internalAdapter.findUserById(userId);
+            const foundUser =
+              await ctx.context.internalAdapter.findUserById(userId);
             if (!foundUser) {
-              throw APIError.from("INTERNAL_SERVER_ERROR", ATPROTO_ERROR_CODES.CALLBACK_FAILED);
+              throw APIError.from(
+                "INTERNAL_SERVER_ERROR",
+                ATPROTO_ERROR_CODES.CALLBACK_FAILED,
+              );
             }
 
-            const session = await ctx.context.internalAdapter.createSession(userId);
+            const session =
+              await ctx.context.internalAdapter.createSession(userId);
 
             await setSessionCookie(ctx, {
               session,
@@ -554,8 +600,14 @@ export const atproto = (options: AtprotoPluginOptions) => {
             let callbackURL = "/";
             if (userState) {
               try {
-                const parsed = typeof userState === "string" ? JSON.parse(userState) : userState;
-                if (parsed.callbackURL && typeof parsed.callbackURL === "string") {
+                const parsed =
+                  typeof userState === "string"
+                    ? JSON.parse(userState)
+                    : userState;
+                if (
+                  parsed.callbackURL &&
+                  typeof parsed.callbackURL === "string"
+                ) {
                   callbackURL = parsed.callbackURL;
                 }
               } catch {
@@ -571,133 +623,155 @@ export const atproto = (options: AtprotoPluginOptions) => {
             throw ctx.redirect(callbackURL);
           } catch (e) {
             // Re-throw redirects and API responses
-            if (e && typeof e === "object" && ("statusCode" in e || "status" in e)) {
+            if (
+              e &&
+              typeof e === "object" &&
+              ("statusCode" in e || "status" in e)
+            ) {
               throw e;
             }
             if (e instanceof OAuthCallbackError) {
               const errorUrl = `${ctx.context.baseURL}/error?error=${e.error}`;
               throw ctx.redirect(errorUrl);
             }
-            throw APIError.from("INTERNAL_SERVER_ERROR", ATPROTO_ERROR_CODES.CALLBACK_FAILED);
+            throw APIError.from(
+              "INTERNAL_SERVER_ERROR",
+              ATPROTO_ERROR_CODES.CALLBACK_FAILED,
+            );
           }
         },
       ),
 
       // ── Get session (returns ATProto info for the current user) ──
 
-      atprotoGetSession: createAuthEndpoint("/atproto/session", { method: "GET" }, async (ctx) => {
-        const { getSessionFromCtx } = await import("better-auth/api");
-        const currentSession = await getSessionFromCtx(ctx);
-        if (!currentSession) {
-          throw APIError.fromStatus("UNAUTHORIZED", {
-            message: "Not authenticated",
+      atprotoGetSession: createAuthEndpoint(
+        "/atproto/session",
+        { method: "GET" },
+        async (ctx) => {
+          const { getSessionFromCtx } = await import("better-auth/api");
+          const currentSession = await getSessionFromCtx(ctx);
+          if (!currentSession) {
+            throw APIError.fromStatus("UNAUTHORIZED", {
+              message: "Not authenticated",
+            });
+          }
+
+          const atprotoSession = await ctx.context.adapter.findOne<{
+            did: string;
+            handle: string;
+            pdsUrl: string;
+          }>({
+            model: "atprotoSession",
+            where: [
+              {
+                field: "userId",
+                value: currentSession.user.id,
+              },
+            ],
           });
-        }
 
-        const atprotoSession = await ctx.context.adapter.findOne<{
-          did: string;
-          handle: string;
-          pdsUrl: string;
-        }>({
-          model: "atprotoSession",
-          where: [
-            {
-              field: "userId",
-              value: currentSession.user.id,
-            },
-          ],
-        });
+          if (!atprotoSession) {
+            throw APIError.from(
+              "NOT_FOUND",
+              ATPROTO_ERROR_CODES.SESSION_NOT_FOUND,
+            );
+          }
 
-        if (!atprotoSession) {
-          throw APIError.from("NOT_FOUND", ATPROTO_ERROR_CODES.SESSION_NOT_FOUND);
-        }
+          // Include profile fields from the user record
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- plugin schema extends user
+          const user = currentSession.user as Record<string, unknown>;
 
-        // Include profile fields from the user record
-        // oxlint-disable-next-line no-unsafe-type-assertion -- plugin schema extends user
-        const user = currentSession.user as Record<string, unknown>;
-
-        return ctx.json({
-          did: atprotoSession.did,
-          handle: atprotoSession.handle,
-          pdsUrl: atprotoSession.pdsUrl,
-          atprotoDid: getString(user, "atprotoDid") ?? null,
-          atprotoHandle: getString(user, "atprotoHandle") ?? null,
-        });
-      }),
+          return ctx.json({
+            did: atprotoSession.did,
+            handle: atprotoSession.handle,
+            pdsUrl: atprotoSession.pdsUrl,
+            atprotoDid: getString(user, "atprotoDid") ?? null,
+            atprotoHandle: getString(user, "atprotoHandle") ?? null,
+          });
+        },
+      ),
 
       // ── Restore (lightweight session check without full profile fetch) ──
 
-      atprotoRestore: createAuthEndpoint("/atproto/restore", { method: "POST" }, async (ctx) => {
-        const { getSessionFromCtx } = await import("better-auth/api");
-        const currentSession = await getSessionFromCtx(ctx);
-        if (!currentSession) {
-          throw APIError.fromStatus("UNAUTHORIZED", {
-            message: "Not authenticated",
+      atprotoRestore: createAuthEndpoint(
+        "/atproto/restore",
+        { method: "POST" },
+        async (ctx) => {
+          const { getSessionFromCtx } = await import("better-auth/api");
+          const currentSession = await getSessionFromCtx(ctx);
+          if (!currentSession) {
+            throw APIError.fromStatus("UNAUTHORIZED", {
+              message: "Not authenticated",
+            });
+          }
+
+          const atprotoSession = await ctx.context.adapter.findOne<{
+            did: string;
+            handle: string;
+            pdsUrl: string;
+          }>({
+            model: "atprotoSession",
+            where: [{ field: "userId", value: currentSession.user.id }],
           });
-        }
 
-        const atprotoSession = await ctx.context.adapter.findOne<{
-          did: string;
-          handle: string;
-          pdsUrl: string;
-        }>({
-          model: "atprotoSession",
-          where: [{ field: "userId", value: currentSession.user.id }],
-        });
+          if (!atprotoSession) {
+            return ctx.json({ active: false });
+          }
 
-        if (!atprotoSession) {
-          return ctx.json({ active: false });
-        }
-
-        // Try to restore the OAuth session (token refresh if needed)
-        try {
-          const validDid = toDid(atprotoSession.did);
-          if (!validDid) return ctx.json({ active: false });
-          await oauthClient.restore(validDid);
-          return ctx.json({
-            active: true,
-            did: atprotoSession.did,
-            handle: atprotoSession.handle,
-          });
-        } catch {
-          return ctx.json({ active: false });
-        }
-      }),
+          // Try to restore the OAuth session (token refresh if needed)
+          try {
+            const validDid = toDid(atprotoSession.did);
+            if (!validDid) return ctx.json({ active: false });
+            await oauthClient.restore(validDid);
+            return ctx.json({
+              active: true,
+              did: atprotoSession.did,
+              handle: atprotoSession.handle,
+            });
+          } catch {
+            return ctx.json({ active: false });
+          }
+        },
+      ),
 
       // ── Sign out (revoke ATProto session) ──
 
-      atprotoSignOut: createAuthEndpoint("/atproto/sign-out", { method: "POST" }, async (ctx) => {
-        const { getSessionFromCtx } = await import("better-auth/api");
-        const currentSession = await getSessionFromCtx(ctx);
-        if (!currentSession) {
-          throw APIError.fromStatus("UNAUTHORIZED", {
-            message: "Not authenticated",
-          });
-        }
-
-        const atprotoSession = await ctx.context.adapter.findOne<{
-          did: string;
-        }>({
-          model: "atprotoSession",
-          where: [
-            {
-              field: "userId",
-              value: currentSession.user.id,
-            },
-          ],
-        });
-
-        if (atprotoSession) {
-          try {
-            const validDid = toDid(atprotoSession.did);
-            if (validDid) await oauthClient.revoke(validDid);
-          } catch {
-            // Best effort revocation
+      atprotoSignOut: createAuthEndpoint(
+        "/atproto/sign-out",
+        { method: "POST" },
+        async (ctx) => {
+          const { getSessionFromCtx } = await import("better-auth/api");
+          const currentSession = await getSessionFromCtx(ctx);
+          if (!currentSession) {
+            throw APIError.fromStatus("UNAUTHORIZED", {
+              message: "Not authenticated",
+            });
           }
-        }
 
-        return ctx.json({ success: true });
-      }),
+          const atprotoSession = await ctx.context.adapter.findOne<{
+            did: string;
+          }>({
+            model: "atprotoSession",
+            where: [
+              {
+                field: "userId",
+                value: currentSession.user.id,
+              },
+            ],
+          });
+
+          if (atprotoSession) {
+            try {
+              const validDid = toDid(atprotoSession.did);
+              if (validDid) await oauthClient.revoke(validDid);
+            } catch {
+              // Best effort revocation
+            }
+          }
+
+          return ctx.json({ success: true });
+        },
+      ),
 
       // ── Server-only: get authenticated XRPC client ──
       // Path-less endpoint — only callable via auth.api.getAtprotoClient(),
@@ -718,7 +792,9 @@ export const atproto = (options: AtprotoPluginOptions) => {
           let did: string | undefined = inputDid;
 
           if (!did && userId) {
-            const atprotoSession = await ctx.context.adapter.findOne<{ did: string }>({
+            const atprotoSession = await ctx.context.adapter.findOne<{
+              did: string;
+            }>({
               model: "atprotoSession",
               where: [{ field: "userId", value: userId }],
             });
@@ -728,12 +804,18 @@ export const atproto = (options: AtprotoPluginOptions) => {
           }
 
           if (!did) {
-            throw APIError.from("BAD_REQUEST", ATPROTO_ERROR_CODES.SESSION_NOT_FOUND);
+            throw APIError.from(
+              "BAD_REQUEST",
+              ATPROTO_ERROR_CODES.SESSION_NOT_FOUND,
+            );
           }
 
           const validDid = toDid(did);
           if (!validDid) {
-            throw APIError.from("BAD_REQUEST", ATPROTO_ERROR_CODES.INVALID_HANDLE);
+            throw APIError.from(
+              "BAD_REQUEST",
+              ATPROTO_ERROR_CODES.INVALID_HANDLE,
+            );
           }
 
           const oauthSession = await oauthClient.restore(validDid);

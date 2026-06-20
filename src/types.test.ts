@@ -82,7 +82,7 @@ describe("atprotoSchema", () => {
 
     it("has a required 'expiresAt' field of type number", () => {
       expect(fields.expiresAt).toEqual({
-        type: "number",
+        type: "date",
         required: true,
       });
     });

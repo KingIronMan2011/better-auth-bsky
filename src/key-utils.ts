@@ -27,6 +27,6 @@ export function extractPublicJwk(
   const entries = Object.entries(privateJwk).filter(
     ([key]) => !PRIVATE_KEY_FIELDS.has(key),
   );
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- Object.fromEntries loses type info
+
   return Object.fromEntries(entries) as PublicJwk;
 }

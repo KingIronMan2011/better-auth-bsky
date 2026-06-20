@@ -314,7 +314,7 @@ describe("fetchAtprotoProfilePublic", () => {
   it("returns null on network error", async () => {
     // Mock fetch to simulate network error
     const originalFetch = globalThis.fetch;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- test mock
+
     globalThis.fetch = vi
       .fn()
       .mockRejectedValue(new Error("Network error")) as unknown as typeof fetch;
@@ -327,7 +327,7 @@ describe("fetchAtprotoProfilePublic", () => {
 
   it("returns null on non-OK response", async () => {
     const originalFetch = globalThis.fetch;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- test mock
+
     globalThis.fetch = vi
       .fn()
       .mockResolvedValue({ ok: false, status: 404 }) as unknown as typeof fetch;
@@ -340,7 +340,7 @@ describe("fetchAtprotoProfilePublic", () => {
 
   it("returns profile data on successful response", async () => {
     const originalFetch = globalThis.fetch;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- test mock
+
     globalThis.fetch = vi.fn().mockResolvedValue({
       ok: true,
       json: () =>

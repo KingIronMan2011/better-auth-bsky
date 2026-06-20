@@ -42,7 +42,6 @@ async function parseJsonResponse(
 ): Promise<Record<string, unknown>> {
   const body: unknown = await resp.json();
   if (typeof body === "object" && body !== null && !Array.isArray(body)) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- validated above
     return body as Record<string, unknown>;
   }
   return {};
@@ -96,7 +95,7 @@ function buildMetadata(baseURL: string, options: AtprotoPluginOptions) {
           "falling back to public client mode. Use an HTTPS baseURL for confidential client support.",
       );
     }
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- loopback client_id format per ATProto spec
+
     return {
       redirect_uris: [redirectUri],
       scope,
@@ -295,7 +294,7 @@ export const atproto = (options: AtprotoPluginOptions) => {
 
     init(ctx: { baseURL: string; adapter: unknown }) {
       const baseURL = ctx.baseURL;
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- better-auth types adapter as unknown
+
       const adapter = ctx.adapter as import("./stores.js").DbAdapter;
 
       const sessionStore = new DbSessionStore(adapter);
@@ -309,7 +308,6 @@ export const atproto = (options: AtprotoPluginOptions) => {
         !!options.keyset?.length && !isLoopbackUrl(baseURL);
 
       if (useConfidential) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- OAuthClient overloaded constructor
         oauthClient = new OAuthClient({
           metadata,
           keyset: options.keyset!,
@@ -317,7 +315,6 @@ export const atproto = (options: AtprotoPluginOptions) => {
           stores: { sessions: sessionStore, states: stateStore },
         } as ConstructorParameters<typeof OAuthClient>[0]);
       } else {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- OAuthClient overloaded constructor
         oauthClient = new OAuthClient({
           metadata,
           actorResolver,
@@ -381,7 +378,6 @@ export const atproto = (options: AtprotoPluginOptions) => {
           }
 
           try {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- validated above
             const identifier = handle as `${string}.${string}`;
             const result = await oauthClient.authorize({
               target: {
@@ -678,7 +674,7 @@ export const atproto = (options: AtprotoPluginOptions) => {
           }
 
           // Include profile fields from the user record
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- plugin schema extends user
+
           const user = currentSession.user as Record<string, unknown>;
 
           return ctx.json({

@@ -417,6 +417,9 @@ export const atproto = (options: AtprotoPluginOptions) => {
         },
         async (ctx) => {
           if (ctx.query.error) {
+            console.error(
+              `[atproto] callback: Bluesky returned error="${ctx.query.error}" description="${ctx.query.error_description ?? ""}"`,
+            );
             const errorUrl = `${ctx.context.baseURL}/error?error=${ctx.query.error}`;
             throw ctx.redirect(errorUrl);
           }
@@ -426,6 +429,9 @@ export const atproto = (options: AtprotoPluginOptions) => {
             if (ctx.query.code) params.set("code", ctx.query.code);
             if (ctx.query.state) params.set("state", ctx.query.state);
             if (ctx.query.iss) params.set("iss", ctx.query.iss);
+            console.log(
+              `[atproto] callback: received code=${!!ctx.query.code} state=${ctx.query.state?.slice(0, 8)}… iss=${ctx.query.iss ?? "none"}`,
+            );
 
             const { session: oauthSession, state: userState } =
               await oauthClient.callback(params);
@@ -627,9 +633,13 @@ export const atproto = (options: AtprotoPluginOptions) => {
               throw e;
             }
             if (e instanceof OAuthCallbackError) {
+              console.error(
+                `[atproto] OAuthCallbackError: error="${e.error}" message="${e.message}"`,
+              );
               const errorUrl = `${ctx.context.baseURL}/error?error=${e.error}`;
               throw ctx.redirect(errorUrl);
             }
+            console.error("[atproto] callback: unexpected error:", e);
             throw APIError.from(
               "INTERNAL_SERVER_ERROR",
               ATPROTO_ERROR_CODES.CALLBACK_FAILED,

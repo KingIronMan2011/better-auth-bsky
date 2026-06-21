@@ -98,6 +98,7 @@ export class DbStateStore implements StateStore {
   constructor(private adapter: DbAdapter) {}
 
   async get(stateKey: string): Promise<StoredState | undefined> {
+    console.log(`[atproto] DbStateStore.get: looking up stateKey=${stateKey.slice(0, 8)}…`);
     const row = await this.adapter.findOne<{
       stateData: string;
       expiresAt: Date | number;
@@ -105,28 +106,40 @@ export class DbStateStore implements StateStore {
       model: "atprotoState",
       where: [{ field: "stateKey", value: stateKey }],
     });
-    if (!row) return undefined;
+    if (!row) {
+      console.error(`[atproto] DbStateStore.get: findOne returned null for stateKey=${stateKey.slice(0, 8)}…`);
+      return undefined;
+    }
     const expiresAtMs =
       row.expiresAt instanceof Date ? row.expiresAt.getTime() : row.expiresAt;
     if (expiresAtMs < Date.now()) {
+      console.error(`[atproto] DbStateStore.get: state expired (expiresAt=${expiresAtMs}, now=${Date.now()})`);
       // Expired — clean it up
       await this.delete(stateKey);
       return undefined;
     }
 
+    console.log(`[atproto] DbStateStore.get: found state for stateKey=${stateKey.slice(0, 8)}… (expires in ${Math.round((expiresAtMs - Date.now()) / 1000)}s)`);
     return JSON.parse(row.stateData) as StoredState;
   }
 
   async set(stateKey: string, state: StoredState): Promise<void> {
     const data = JSON.stringify(state);
-    await this.adapter.create({
-      model: "atprotoState",
-      data: {
-        stateKey,
-        stateData: data,
-        expiresAt: new Date(state.expiresAt),
-      },
-    });
+    console.log(`[atproto] DbStateStore.set: storing stateKey=${stateKey.slice(0, 8)}… expiresAt=${new Date(state.expiresAt).toISOString()}`);
+    try {
+      await this.adapter.create({
+        model: "atprotoState",
+        data: {
+          stateKey,
+          stateData: data,
+          expiresAt: new Date(state.expiresAt),
+        },
+      });
+      console.log(`[atproto] DbStateStore.set: stored stateKey=${stateKey.slice(0, 8)}… OK`);
+    } catch (e) {
+      console.error(`[atproto] DbStateStore.set: FAILED to store stateKey=${stateKey.slice(0, 8)}…:`, e);
+      throw e;
+    }
   }
 
   async delete(stateKey: string): Promise<void> {

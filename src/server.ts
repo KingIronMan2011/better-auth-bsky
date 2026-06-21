@@ -268,7 +268,7 @@ const ATPROTO_ERROR_CODES = {
  * Integrates ATProto OAuth 2.1 (DPoP + PAR + PKCE) via @atcute/oauth-node-client.
  * Supports both confidential (with keyset) and public client modes.
  */
-export const atproto = (options: AtprotoPluginOptions) => {
+export const atproto = (options: AtprotoPluginOptions): BetterAuthPlugin => {
   let oauthClient: OAuthClient;
 
   const signInPath = options.signInPath ?? "/sign-in/atproto";

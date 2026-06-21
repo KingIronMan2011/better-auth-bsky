@@ -92,7 +92,7 @@ export const atprotoSchema = {
       sessionData: { type: "string" as const, required: true },
       userId: {
         type: "string" as const,
-        required: true,
+        required: false,
         references: {
           model: "user",
           field: "id",

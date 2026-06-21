@@ -68,7 +68,7 @@ export class DbSessionStore implements SessionStore {
         data: {
           did,
           sessionData: data,
-          userId: "",
+          userId: null,
           handle: "",
           pdsUrl: "",
           updatedAt: new Date(),
